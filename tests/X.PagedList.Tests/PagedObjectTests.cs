@@ -1,4 +1,6 @@
 ﻿using Bogus;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace X.PagedList.Tests
 {
@@ -22,9 +24,43 @@ namespace X.PagedList.Tests
                 .Be(supersetSize / pageSize);
         }
 
-        private class Model
+        [Fact]
+        public void PagedObjectTest_Serialization()
         {
-            private string Value { get; set; }
+            var pageSize = 2;
+
+            var models = new List<Model>
+            {
+                new Model
+                {
+                    Value = "Hello"
+                },
+                new Model
+                {
+                    Value = "World"
+                },
+                new Model
+                {
+                    Value = "Red"
+                },
+                new Model
+                {
+                    Value = "Blue"
+                },
+                new Model
+                {
+                    Value = "Green"
+                }
+            };
+            var pagedObject = new PagedObject<Model>(models, 1, pageSize);
+            var json = JsonSerializer.Serialize(pagedObject);
+            json.Should()
+                .Be("{\"MetaData\":{\"PageCount\":3,\"TotalItemCount\":5,\"PageNumber\":1,\"PageSize\":2,\"HasPreviousPage\":false,\"HasNextPage\":true,\"IsFirstPage\":true,\"IsLastPage\":false,\"FirstItemOnPage\":1,\"LastItemOnPage\":2},\"Items\":[{\"Value\":\"Hello\"},{\"Value\":\"World\"}]}");
+        }
+
+        internal class Model
+        {
+            public string Value { get; set; }
         }
     }
 }
