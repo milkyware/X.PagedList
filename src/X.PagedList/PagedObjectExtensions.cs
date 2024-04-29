@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace X.PagedList
 {
@@ -60,6 +61,22 @@ namespace X.PagedList
             }
 
             return new PagedObject<T>(superset, pageNumber, pageSize);
+        }
+
+        public static Task<PagedObject<T>> ToPagedObjectAsync<T>(this IEnumerable<T> superset, int pageNumber, int pageSize)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                return new PagedObject<T>(superset ?? new List<T>(), pageNumber, pageSize);
+            });
+        }
+
+        public static Task<PagedObject<T>> ToPagedObjectAsync<T>(this IQueryable<T> superset, int pageNumber, int pageSize)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                return new PagedObject<T>(superset, pageNumber, pageSize);
+            });
         }
     }
 }
